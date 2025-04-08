@@ -9,7 +9,7 @@ function CarList({ cars, currentPage, carsPerPage, setCurrentPage, DarkMode, wis
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {currentCars.map(car => (
+        {currentCars.length === 0? <div><h1>No cars of this type available in this web app</h1></div> :currentCars.map(car => (
           <CarCard
             key={car.id}
             car={car}
