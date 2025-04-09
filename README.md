@@ -23,7 +23,6 @@ A responsive React.js-based car search application that allows users to filter, 
 - **Styling**: TailwindCSS
 - **State Management**: useState, useEffect
 - **Storage**: LocalStorage for wishlist
-- **Mock API**: Local data simulation
 
 ---
 
@@ -38,7 +37,7 @@ git clone https://github.com/Sakshamebdev873/car_finder.git
 **2. Navigate to the Project Directory**
 
 ```bash
-cd car-finder-app
+cd car-finder
 ```
 
 **3. Install Dependencies**
