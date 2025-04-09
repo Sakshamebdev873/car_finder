@@ -1,4 +1,14 @@
+import { useState } from 'react';
+
 function Wishlist({ wishlist, toggleWishlist, DarkMode }) {
+  const [disabledId, setDisabledId] = useState(null);
+
+  const handleRemove = (car) => {
+    setDisabledId(car.id);              // Disable button temporarily
+    toggleWishlist(car);                // Remove from wishlist
+    setTimeout(() => setDisabledId(null), 500); // Re-enable after delay
+  };
+
   return (
     <div
       className={`p-6 rounded-lg shadow-md ${
@@ -11,7 +21,7 @@ function Wishlist({ wishlist, toggleWishlist, DarkMode }) {
         <p className={DarkMode ? 'text-gray-300' : 'text-gray-500'}>Your wishlist is empty</p>
       ) : (
         <div className="space-y-4">
-          {wishlist.map(car => (
+          {wishlist.map((car) => (
             <div
               key={car.id}
               className={`flex items-center justify-between p-3 rounded ${
@@ -26,9 +36,13 @@ function Wishlist({ wishlist, toggleWishlist, DarkMode }) {
                   ${car.price.toLocaleString()}
                 </p>
               </div>
+
               <button
-                onClick={() => toggleWishlist(car)}
-                className="text-red-500 hover:text-red-600 text-xl"
+                onClick={() => handleRemove(car)}
+                disabled={disabledId === car.id}
+                className={`text-red-500 hover:text-red-600 text-xl ${
+                  disabledId === car.id ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 ✕
               </button>
@@ -37,7 +51,7 @@ function Wishlist({ wishlist, toggleWishlist, DarkMode }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Wishlist
+export default Wishlist;

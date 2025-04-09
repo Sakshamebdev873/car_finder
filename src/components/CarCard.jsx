@@ -26,15 +26,16 @@ function CarCard({ car, isWishlisted, onWishlistToggle, DarkMode }) {
 
           <button
             onClick={onWishlistToggle}
-            className={`p-2 rounded-full ${
+            disabled={isWishlisted}
+            className={`p-2 rounded-full font-semibold transition ${
               isWishlisted
-                ? 'text-red-500 hover:text-red-600'
+                ? 'text-red-400 cursor-not-allowed opacity-70'
                 : DarkMode
                 ? 'text-gray-200 hover:text-white'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            ❤️ WishList
+            {isWishlisted ? '❤️ Wishlisted' : '🤍 Add to Wishlist'}
           </button>
         </div>
 
@@ -62,7 +63,7 @@ function CarCard({ car, isWishlisted, onWishlistToggle, DarkMode }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default CarCard
+export default CarCard;

@@ -1,71 +1,82 @@
-import { useState, useEffect } from 'react'
-import SearchBar from './components/SearchBar'
-import CarList from './components/CarList'
-import Wishlist from './components/Wishlist'
-import { mockCars } from './data/mockData'
-import { FaRegMoon } from "react-icons/fa";
-import { IoSunnyOutline } from "react-icons/io5";
+import { useState, useEffect } from 'react';
+import SearchBar from './components/SearchBar';
+import CarList from './components/CarList';
+import Wishlist from './components/Wishlist';
+import { mockCars } from './data/mockData';
+import { FaRegMoon } from 'react-icons/fa';
+import { IoSunnyOutline } from 'react-icons/io5';
+
 function App() {
-  const [cars, setCars] = useState([])
-  const [filteredCars, setFilteredCars] = useState([])
-  const [wishlist, setWishlist] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [cars, setCars] = useState([]);
+  const [filteredCars, setFilteredCars] = useState([]);
+  
+  // Load wishlist directly from localStorage
+  const [wishlist, setWishlist] = useState(() => {
+    try {
+      const stored = localStorage.getItem('wishlist');
+      return stored ? JSON.parse(stored) : [];
+    } catch (err) {
+      console.error('Failed to load wishlist from localStorage', err);
+      return [];
+    }
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     brand: '',
     minPrice: '',
     maxPrice: '',
     fuelType: '',
-    seatingCapacity: ''
-  })
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const carsPerPage = 10
+    seatingCapacity: '',
+  });
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const carsPerPage = 10;
+
+  // Load mock data on mount
   useEffect(() => {
-    // Simulating API call with mock data
-    setCars(mockCars)
-    setFilteredCars(mockCars)
+    setCars(mockCars);
+    setFilteredCars(mockCars);
+  }, []);
 
-    // Load wishlist from localStorage
-    const savedWishlist = localStorage.getItem('wishlist')
-    if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist))
-    }
-  }, [])
-
+  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
-    // Save wishlist to localStorage whenever it changes
-    localStorage.setItem('wishlist', JSON.stringify(wishlist))
-  }, [wishlist])
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
 
+  // Handle search and filtering
   const handleSearch = (searchFilters) => {
-    setFilters(searchFilters)
-    let filtered = cars.filter(car => {
+    setFilters(searchFilters);
+
+    const filtered = cars.filter((car) => {
       return (
         (!searchFilters.brand || car.brand.toLowerCase().includes(searchFilters.brand.toLowerCase())) &&
         (!searchFilters.minPrice || car.price >= parseInt(searchFilters.minPrice)) &&
         (!searchFilters.maxPrice || car.price <= parseInt(searchFilters.maxPrice)) &&
-        (!searchFilters.fuelType || car.fuelType === searchFilters.fuelType) &&
+        (!searchFilters.fuelType || car.fuelType.toLowerCase() === searchFilters.fuelType.toLowerCase()) &&
         (!searchFilters.seatingCapacity || car.seatingCapacity === parseInt(searchFilters.seatingCapacity))
-      )
-    })
-    setFilteredCars(filtered)
-    setCurrentPage(1)
-  }
+      );
+    });
+
+    setFilteredCars(filtered);
+    setCurrentPage(1);
+  };
 
   const toggleWishlist = (car) => {
-    setWishlist(prevWishlist => {
-      if (prevWishlist.find(item => item.id === car.id)) {
-        return prevWishlist.filter(item => item.id !== car.id)
+    setWishlist((prev) => {
+      const exists = prev.find((item) => item.id === car.id);
+      if (exists) {
+        return prev.filter((item) => item.id !== car.id);
       } else {
-        return [...prevWishlist, car]
+        return [...prev, car];
       }
-    })
-  }
+    });
+  };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
-    document.documentElement.classList.toggle('dark')
-  }
+    setIsDarkMode((prev) => !prev);
+    document.documentElement.classList.toggle('dark');
+  };
 
   return (
     <div className={`min-h-screen transition-colors duration-200 ${isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-100'}`}>
@@ -74,16 +85,18 @@ function App() {
           <h1 className="text-3xl font-bold">Car Finder</h1>
           <button
             onClick={toggleDarkMode}
-            className="px-4 py-2 rounded-lg bg-blue-500 text- flex  justify-center items-center gap-2  hover:bg-blue-600 transition-colors"
+            className="px-4 py-2 rounded-lg bg-blue-500 flex items-center gap-2 hover:bg-blue-600"
           >
-            {isDarkMode ? <IoSunnyOutline /> : <FaRegMoon />}
-            {isDarkMode ? <div className='text-white' >Light Mode</div> : <div className='text-black' >Dark Mode</div>}
+            {isDarkMode ? <IoSunnyOutline className="text-white" /> : <FaRegMoon className="text-black" />}
+            <span className={isDarkMode ? 'text-white' : 'text-black'}>
+              {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            </span>
           </button>
         </div>
-        
+
         <SearchBar DarkMode={isDarkMode} onSearch={handleSearch} />
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
           <div className="md:col-span-2">
             <CarList
               cars={filteredCars}
@@ -96,12 +109,16 @@ function App() {
             />
           </div>
           <div className="md:col-span-1">
-            <Wishlist wishlist={wishlist} DarkMode={isDarkMode} toggleWishlist={toggleWishlist} />
+            <Wishlist
+              wishlist={wishlist}
+              DarkMode={isDarkMode}
+              toggleWishlist={toggleWishlist}
+            />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
